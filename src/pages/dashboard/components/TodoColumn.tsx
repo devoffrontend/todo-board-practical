@@ -41,7 +41,7 @@ export const TodoColumn = ({ column, todos }: TodoColumnProps) => {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Add Todo</p>
+                  <p>Add New Todo</p>
                 </TooltipContent>
               </Tooltip>
 
