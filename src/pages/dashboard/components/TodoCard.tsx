@@ -15,7 +15,7 @@ interface TodoCardProps {
 }
 
 export const TodoCard = ({ todo }: TodoCardProps) => {
-  const { removeTodo } = useTodoBoardStore();
+  const { removeTodo, setOverColumn } = useTodoBoardStore();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
     e.dataTransfer.setData("item", JSON.stringify(todo));
@@ -28,6 +28,10 @@ export const TodoCard = ({ todo }: TodoCardProps) => {
   const handleDelete = () => {
     removeTodo(todo.id);
     setIsDeleteModalOpen(false);
+  };
+
+  const handleDragEnd = () => {
+    setOverColumn(null);
   };
 
   return (
@@ -45,6 +49,7 @@ export const TodoCard = ({ todo }: TodoCardProps) => {
         draggable={true}
         onDragStart={handleDragStart}
         onDragOver={handleDragOver}
+        onDragEnd={handleDragEnd}
       >
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-medium">{todo.title}</h3>

@@ -6,6 +6,9 @@ interface ITodoBoardStore {
   columns: ITodoColumn[];
   todos: ITodo[];
 
+  overColumn: ITodoColumn | null;
+  setOverColumn: (column: ITodoColumn | null) => void;
+
   // Column related methods
   addColumn: (label: string) => void;
   removeColumn: (columnId: string) => void;
@@ -73,6 +76,11 @@ export const useTodoBoardStore = create<ITodoBoardStore>()(
     (set, get) => ({
       columns: initialColumns,
       todos: initialTodos,
+
+      overColumn: null,
+      setOverColumn: (column: ITodoColumn | null) => {
+        set({ overColumn: column });
+      },
 
       // Column related methods
       addColumn: (label: string) => {

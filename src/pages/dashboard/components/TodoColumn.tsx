@@ -1,5 +1,7 @@
 import { Button, Tooltip, TooltipContent, TooltipTrigger } from "@/components";
+import { cn } from "@/lib/utils";
 import { PlusIcon, TrashIcon } from "lucide-react";
+import { useCallback, useMemo } from "react";
 import { useTodoBoardStore } from "../store";
 import type { ITodo, ITodoColumn } from "../types";
 import { TodoCard } from "./TodoCard";
@@ -10,19 +12,37 @@ interface TodoColumnProps {
 }
 
 export const TodoColumn = ({ column, todos }: TodoColumnProps) => {
-  const { moveTodo } = useTodoBoardStore();
+  const { moveTodo, setOverColumn, overColumn } = useTodoBoardStore();
 
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-  };
+  const isOver = useMemo(
+    () => overColumn?.id === column.id,
+    [overColumn, column]
+  );
+
+  const handleDragOver = useCallback(
+    (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      if (overColumn?.id === column.id) return;
+      setOverColumn(column);
+    },
+    [column, setOverColumn, overColumn]
+  );
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     const item = JSON.parse(e.dataTransfer.getData("item")) as ITodo;
     moveTodo(item.id, column.id);
+    setTimeout(() => {
+      setOverColumn(null);
+    }, 100);
   };
 
   return (
-    <div className="flex h-full flex-col bg-gray-50/50 border border-gray-200 rounded-sm">
+    <div
+      className={cn(
+        "flex h-full flex-col bg-gray-50/50 border  rounded-sm",
+        isOver ? "border-blue-500" : "border-gray-200"
+      )}
+    >
       <div className="flex flex-col pb-3 h-full rounded-md bg-gray-50/30 w-[300px] border border-transparent">
         <div className="flex flex-col space-y-3 flex-1">
           <div className="flex items-center justify-between px-3 bg-primary py-1 rounded-sm text-white">
