@@ -1,9 +1,15 @@
 import { useTodoBoardStore } from "../store";
 import { NewColumn } from "./NewColumn";
+import { NewTodo } from "./NewTodo";
 import { TodoColumn } from "./TodoColumn";
 
 export const TodoBoard = () => {
-  const { columns, getTodosByColumn } = useTodoBoardStore();
+  const {
+    columns,
+    getTodosByColumn,
+    isNewTodoModalOpen,
+    setIsNewTodoModalOpen,
+  } = useTodoBoardStore();
 
   return (
     <div className="flex w-full flex-col flex-1">
@@ -21,6 +27,10 @@ export const TodoBoard = () => {
           <NewColumn />
         </div>
       </div>
+      <NewTodo
+        isOpen={isNewTodoModalOpen}
+        onClose={() => setIsNewTodoModalOpen(false)}
+      />
     </div>
   );
 };

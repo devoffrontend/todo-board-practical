@@ -1,0 +1,164 @@
+"use client";
+
+import {
+  Button,
+  Calendar,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  FieldGroup,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Textarea,
+} from "@/components";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ChevronDownIcon } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useTodoBoardStore } from "../store";
+import type { ITodoColumn } from "../types";
+
+const formSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+  dueDate: z.date().min(1, "Due date must be in the future"),
+});
+
+interface NewTodoProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export const NewTodo = ({ isOpen, onClose }: NewTodoProps) => {
+  const [open, setOpen] = useState(false);
+  const { addTodo, newTodoModalColumn } = useTodoBoardStore();
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      dueDate: new Date(),
+    },
+  });
+
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
+    addTodo({
+      title: data.title,
+      description: data.description,
+      dueDate: data.dueDate,
+      column: { ...newTodoModalColumn } as ITodoColumn,
+    });
+    form.reset();
+    onClose();
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        className="border-0 w-full p-4 shadow-popup [&>button]:cursor-pointer"
+        onInteractOutside={(e) => e.preventDefault()}
+      >
+        <DialogHeader>
+          <DialogTitle>Add New Todo</DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-col gap-2">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <FieldGroup>
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel htmlFor="title">Title</FormLabel>
+                      <FormControl>
+                        <Input
+                          id="title"
+                          type="text"
+                          placeholder="Enter your title"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel htmlFor="description">Description</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          id="description"
+                          placeholder="Enter your description"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="dueDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel htmlFor="dueDate">Due Date</FormLabel>
+                      <FormControl>
+                        <Popover open={open} onOpenChange={setOpen}>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              id="date"
+                              className="w-full justify-between font-normal cursor-pointer"
+                            >
+                              {field.value
+                                ? field.value.toLocaleDateString()
+                                : "Select date"}
+                              <ChevronDownIcon />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className="w-auto overflow-hidden p-0"
+                            align="start"
+                          >
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              captionLayout="dropdown"
+                              onSelect={(date) => {
+                                field.onChange(date);
+                                setOpen(false);
+                              }}
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </FieldGroup>
+              <Button type="submit" className="w-full mt-4">
+                {form.formState.isSubmitting ? "Adding todo..." : "Add Todo"}
+              </Button>
+            </form>
+          </Form>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};

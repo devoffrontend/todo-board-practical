@@ -83,7 +83,7 @@ export const NewColumn = () => {
         <div className="flex gap-2 justify-end">
           <Button
             variant="destructive"
-            className="flex-1"
+            className="flex-1 cursor-pointer"
             size="sm"
             disabled={creatingNewColumn}
             onClick={handleCancel}
@@ -92,7 +92,7 @@ export const NewColumn = () => {
           </Button>
           <Button
             variant="default"
-            className="flex-1"
+            className="flex-1 cursor-pointer"
             size="sm"
             disabled={creatingNewColumn}
             onClick={handleSave}

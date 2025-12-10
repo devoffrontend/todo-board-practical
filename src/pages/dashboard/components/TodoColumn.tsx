@@ -12,7 +12,13 @@ interface TodoColumnProps {
 }
 
 export const TodoColumn = ({ column, todos }: TodoColumnProps) => {
-  const { moveTodo, setOverColumn, overColumn } = useTodoBoardStore();
+  const {
+    moveTodo,
+    setOverColumn,
+    overColumn,
+    setIsNewTodoModalOpen,
+    setNewTodoModalColumn,
+  } = useTodoBoardStore();
 
   const isOver = useMemo(
     () => overColumn?.id === column.id,
@@ -36,6 +42,11 @@ export const TodoColumn = ({ column, todos }: TodoColumnProps) => {
     }, 100);
   };
 
+  const handleAddNewTodo = () => {
+    setIsNewTodoModalOpen(true);
+    setNewTodoModalColumn(column);
+  };
+
   return (
     <div
       className={cn(
@@ -56,6 +67,7 @@ export const TodoColumn = ({ column, todos }: TodoColumnProps) => {
                     variant="secondary"
                     size="sm"
                     className="cursor-pointer p-0 w-6 h-6 rounded-sm bg-transparent border-none hover:bg-transparent"
+                    onClick={handleAddNewTodo}
                   >
                     <PlusIcon className="w-4 h-4 text-white" />
                   </Button>

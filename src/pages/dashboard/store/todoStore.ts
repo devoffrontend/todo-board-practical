@@ -9,6 +9,11 @@ interface ITodoBoardStore {
   overColumn: ITodoColumn | null;
   setOverColumn: (column: ITodoColumn | null) => void;
 
+  isNewTodoModalOpen: boolean;
+  setIsNewTodoModalOpen: (isOpen: boolean) => void;
+  newTodoModalColumn: ITodoColumn | null;
+  setNewTodoModalColumn: (column: ITodoColumn | null) => void;
+
   // Column related methods
   addColumn: (label: string) => void;
   removeColumn: (columnId: string) => void;
@@ -34,41 +39,41 @@ const generateId = () =>
 
 // Initial default columns
 const initialColumns: ITodoColumn[] = [
-  { id: "todo", label: "To Do" },
-  { id: "in-progress", label: "In Progress" },
-  { id: "done", label: "Done" },
+  // { id: "todo", label: "To Do" },
+  // { id: "in-progress", label: "In Progress" },
+  // { id: "done", label: "Done" },
 ];
 
 // Initial default todos
 const initialTodos: ITodo[] = [
-  {
-    id: generateId(),
-    title: "Welcome to Todo Board",
-    description:
-      "This is your first todo item. You can drag and drop todos between columns.",
-    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
-    column: initialColumns[0],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: generateId(),
-    title: "Complete project setup",
-    description: "Set up the development environment and install dependencies.",
-    dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days from now
-    column: initialColumns[1],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: generateId(),
-    title: "Review code",
-    description: "Review the codebase and understand the architecture.",
-    dueDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day from now
-    column: initialColumns[2],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
+  // {
+  //   id: generateId(),
+  //   title: "Welcome to Todo Board",
+  //   description:
+  //     "This is your first todo item. You can drag and drop todos between columns.",
+  //   dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+  //   column: initialColumns[0],
+  //   createdAt: new Date(),
+  //   updatedAt: new Date(),
+  // },
+  // {
+  //   id: generateId(),
+  //   title: "Complete project setup",
+  //   description: "Set up the development environment and install dependencies.",
+  //   dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days from now
+  //   column: initialColumns[1],
+  //   createdAt: new Date(),
+  //   updatedAt: new Date(),
+  // },
+  // {
+  //   id: generateId(),
+  //   title: "Review code",
+  //   description: "Review the codebase and understand the architecture.",
+  //   dueDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day from now
+  //   column: initialColumns[2],
+  //   createdAt: new Date(),
+  //   updatedAt: new Date(),
+  // },
 ];
 
 export const useTodoBoardStore = create<ITodoBoardStore>()(
@@ -80,6 +85,15 @@ export const useTodoBoardStore = create<ITodoBoardStore>()(
       overColumn: null,
       setOverColumn: (column: ITodoColumn | null) => {
         set({ overColumn: column });
+      },
+
+      isNewTodoModalOpen: false,
+      setIsNewTodoModalOpen: (isOpen: boolean) => {
+        set({ isNewTodoModalOpen: isOpen });
+      },
+      newTodoModalColumn: null,
+      setNewTodoModalColumn: (column: ITodoColumn | null) => {
+        set({ newTodoModalColumn: column });
       },
 
       // Column related methods
