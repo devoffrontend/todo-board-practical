@@ -15,7 +15,8 @@ interface TodoCardProps {
 }
 
 export const TodoCard = ({ todo }: TodoCardProps) => {
-  const { removeTodo, setOverColumn } = useTodoBoardStore();
+  const { removeTodo, setOverColumn, setEditTodoItem, setIsNewTodoModalOpen } =
+    useTodoBoardStore();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
     e.dataTransfer.setData("item", JSON.stringify(todo));
@@ -32,6 +33,11 @@ export const TodoCard = ({ todo }: TodoCardProps) => {
 
   const handleDragEnd = () => {
     setOverColumn(null);
+  };
+
+  const handleEdit = () => {
+    setEditTodoItem(todo);
+    setIsNewTodoModalOpen(true);
   };
 
   return (
@@ -52,7 +58,7 @@ export const TodoCard = ({ todo }: TodoCardProps) => {
         onDragEnd={handleDragEnd}
       >
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-medium">{todo.title}</h3>
+          <h3 className="text-lg font-medium line-clamp-2">{todo.title}</h3>
         </div>
         <p className="text-sm text-gray-500 line-clamp-2">{todo.description}</p>
         <p className="text-sm text-gray-500">
@@ -69,9 +75,11 @@ export const TodoCard = ({ todo }: TodoCardProps) => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
+                type="button"
                 variant="secondary"
                 size="sm"
                 className="cursor-pointer p-0 w-6 h-6 rounded-sm bg-transparent border-none hover:bg-transparent"
+                onClick={handleEdit}
               >
                 <PencilIcon className="w-4 h-4" />
               </Button>
@@ -84,6 +92,7 @@ export const TodoCard = ({ todo }: TodoCardProps) => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
+                type="button"
                 variant="secondary"
                 size="sm"
                 className="cursor-pointer p-0 w-6 h-6 rounded-sm bg-transparent border-none hover:bg-transparent"

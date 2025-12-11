@@ -9,7 +9,15 @@ export const TodoBoard = () => {
     getTodosByColumn,
     isNewTodoModalOpen,
     setIsNewTodoModalOpen,
+    setEditTodoItem,
+    setNewTodoModalColumn,
   } = useTodoBoardStore();
+
+  const handleCloseNewTodoModal = () => {
+    setNewTodoModalColumn(null);
+    setEditTodoItem(null);
+    setIsNewTodoModalOpen(false);
+  };
 
   return (
     <div className="flex w-full flex-col flex-1">
@@ -27,10 +35,7 @@ export const TodoBoard = () => {
           <NewColumn />
         </div>
       </div>
-      <NewTodo
-        isOpen={isNewTodoModalOpen}
-        onClose={() => setIsNewTodoModalOpen(false)}
-      />
+      <NewTodo isOpen={isNewTodoModalOpen} onClose={handleCloseNewTodoModal} />
     </div>
   );
 };

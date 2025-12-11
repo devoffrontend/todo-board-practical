@@ -34,6 +34,10 @@ export const TodoColumn = ({ column, todos }: TodoColumnProps) => {
     [column, setOverColumn, overColumn]
   );
 
+  const handleDragLeave = useCallback(() => {
+    setOverColumn(null);
+  }, [setOverColumn]);
+
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     const item = JSON.parse(e.dataTransfer.getData("item")) as ITodo;
     moveTodo(item.id, column.id);
@@ -97,6 +101,7 @@ export const TodoColumn = ({ column, todos }: TodoColumnProps) => {
             className="flex flex-col px-3 space-y-3 overflow-y-auto flex-1"
             onDrop={handleDrop}
             onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
           >
             {todos?.length > 0
               ? todos.map((todo) => <TodoCard key={todo.id} todo={todo} />)

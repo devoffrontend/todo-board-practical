@@ -14,6 +14,9 @@ interface ITodoBoardStore {
   newTodoModalColumn: ITodoColumn | null;
   setNewTodoModalColumn: (column: ITodoColumn | null) => void;
 
+  editTodoItem: ITodo | null;
+  setEditTodoItem: (todo: ITodo | null) => void;
+
   // Column related methods
   addColumn: (label: string) => void;
   removeColumn: (columnId: string) => void;
@@ -94,6 +97,11 @@ export const useTodoBoardStore = create<ITodoBoardStore>()(
       newTodoModalColumn: null,
       setNewTodoModalColumn: (column: ITodoColumn | null) => {
         set({ newTodoModalColumn: column });
+      },
+
+      editTodoItem: null,
+      setEditTodoItem: (todo: ITodo | null) => {
+        set({ editTodoItem: todo });
       },
 
       // Column related methods

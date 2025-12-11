@@ -18,11 +18,17 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   Textarea,
 } from "@/components";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronDownIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useTodoBoardStore } from "../store";
@@ -31,6 +37,7 @@ import type { ITodoColumn } from "../types";
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
+  column: z.string().min(1, "Column is required"),
   dueDate: z.date().min(1, "Due date must be in the future"),
 });
 
@@ -41,7 +48,14 @@ interface NewTodoProps {
 
 export const NewTodo = ({ isOpen, onClose }: NewTodoProps) => {
   const [open, setOpen] = useState(false);
-  const { addTodo, newTodoModalColumn } = useTodoBoardStore();
+  const {
+    addTodo,
+    newTodoModalColumn,
+    columns,
+    editTodoItem,
+    updateTodo,
+    setEditTodoItem,
+  } = useTodoBoardStore();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -52,15 +66,53 @@ export const NewTodo = ({ isOpen, onClose }: NewTodoProps) => {
   });
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
+    if (editTodoItem) {
+      updateTodo(editTodoItem.id, {
+        title: data.title,
+        description: data.description,
+        dueDate: data.dueDate,
+        column: columns.find(
+          (column) => column.id === data.column
+        ) as unknown as ITodoColumn,
+      });
+      form.reset();
+      onClose();
+      return;
+    }
     addTodo({
       title: data.title,
       description: data.description,
       dueDate: data.dueDate,
-      column: { ...newTodoModalColumn } as ITodoColumn,
+      column: columns.find(
+        (column) => column.id === data.column
+      ) as unknown as ITodoColumn,
     });
     form.reset();
     onClose();
   };
+
+  useEffect(() => {
+    if (newTodoModalColumn) {
+      form.setValue("column", newTodoModalColumn.id);
+    }
+  }, [newTodoModalColumn, form]);
+
+  useEffect(() => {
+    if (editTodoItem) {
+      form.setValue("title", editTodoItem.title);
+      form.setValue("description", editTodoItem.description);
+      form.setValue("column", editTodoItem.column.id);
+      form.setValue("dueDate", new Date(editTodoItem.dueDate));
+    } else {
+      form.reset();
+    }
+  }, [editTodoItem, form]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setEditTodoItem(null);
+    }
+  }, [isOpen, setEditTodoItem]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -70,7 +122,9 @@ export const NewTodo = ({ isOpen, onClose }: NewTodoProps) => {
         onInteractOutside={(e) => e.preventDefault()}
       >
         <DialogHeader>
-          <DialogTitle>Add New Todo</DialogTitle>
+          <DialogTitle>
+            {editTodoItem ? "Edit Todo" : "Add New Todo"}
+          </DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-2">
           <Form {...form}>
@@ -106,6 +160,35 @@ export const NewTodo = ({ isOpen, onClose }: NewTodoProps) => {
                           placeholder="Enter your description"
                           {...field}
                         />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="column"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel htmlFor="column">Column</FormLabel>
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a column" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              {columns.map((column) => (
+                                <SelectItem key={column.id} value={column.id}>
+                                  {column.label}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -153,7 +236,7 @@ export const NewTodo = ({ isOpen, onClose }: NewTodoProps) => {
                 />
               </FieldGroup>
               <Button type="submit" className="w-full mt-4">
-                {form.formState.isSubmitting ? "Adding todo..." : "Add Todo"}
+                {form.formState.isSubmitting ? "Saving todo..." : "Save Todo"}
               </Button>
             </form>
           </Form>
