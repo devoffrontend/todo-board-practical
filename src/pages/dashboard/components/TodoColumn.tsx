@@ -1,7 +1,13 @@
-import { Button, Tooltip, TooltipContent, TooltipTrigger } from "@/components";
+import {
+  Button,
+  ConfirmationAlert,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components";
 import { cn } from "@/lib/utils";
 import { PlusIcon, TrashIcon } from "lucide-react";
-import { useCallback, useMemo } from "react";
+import { Fragment, useCallback, useMemo, useState } from "react";
 import { useTodoBoardStore } from "../store";
 import type { ITodo, ITodoColumn } from "../types";
 import { TodoCard } from "./TodoCard";
@@ -12,12 +18,14 @@ interface TodoColumnProps {
 }
 
 export const TodoColumn = ({ column, todos }: TodoColumnProps) => {
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const {
     moveTodo,
     setOverColumn,
     overColumn,
     setIsNewTodoModalOpen,
     setNewTodoModalColumn,
+    removeColumn,
   } = useTodoBoardStore();
 
   const isOver = useMemo(
@@ -51,64 +59,82 @@ export const TodoColumn = ({ column, todos }: TodoColumnProps) => {
     setNewTodoModalColumn(column);
   };
 
-  return (
-    <div
-      className={cn(
-        "flex h-full flex-col bg-gray-50/50 border  rounded-sm",
-        isOver ? "border-blue-500" : "border-gray-200"
-      )}
-    >
-      <div className="flex flex-col pb-3 h-full rounded-md bg-gray-50/30 w-[300px] border border-transparent">
-        <div className="flex flex-col space-y-3 flex-1">
-          <div className="flex items-center justify-between px-3 bg-primary py-1 rounded-sm text-white">
-            <h3 className="text-md font-medium">
-              {column.label} - {todos.length}
-            </h3>
-            <div className="flex items-center gap-2">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="cursor-pointer p-0 w-6 h-6 rounded-sm bg-transparent border-none hover:bg-transparent"
-                    onClick={handleAddNewTodo}
-                  >
-                    <PlusIcon className="w-4 h-4 text-white" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Add New Todo</p>
-                </TooltipContent>
-              </Tooltip>
+  const handleDelete = () => {
+    removeColumn(column.id);
+    setIsDeleteModalOpen(false);
+  };
 
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="cursor-pointer p-0 w-6 h-6 rounded-sm bg-transparent border-none hover:bg-transparent"
-                  >
-                    <TrashIcon className="w-4 h-4 text-white" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Delete Column</p>
-                </TooltipContent>
-              </Tooltip>
+  return (
+    <Fragment>
+      <ConfirmationAlert
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title="Delete Column"
+        description="Are you sure you want to delete this column?"
+        actionFunction={handleDelete}
+        confirmText="Delete"
+      />
+      <div
+        className={cn(
+          "flex h-full flex-col bg-gray-50/50 border  rounded-sm",
+          isOver ? "border-blue-500" : "border-gray-200"
+        )}
+      >
+        <div className="flex flex-col pb-3 h-full rounded-md bg-gray-50/30 w-[300px] border border-transparent">
+          <div className="flex flex-col space-y-3 flex-1">
+            <div className="flex items-center justify-between px-3 bg-primary py-1 rounded-sm text-white">
+              <h3 className="text-md font-medium">
+                {column.label} - {todos.length}
+              </h3>
+              <div className="flex items-center gap-2">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      className="cursor-pointer p-0 w-6 h-6 rounded-sm bg-transparent border-none hover:bg-transparent"
+                      onClick={handleAddNewTodo}
+                    >
+                      <PlusIcon className="w-4 h-4 text-white" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Add New Todo</p>
+                  </TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      className="cursor-pointer p-0 w-6 h-6 rounded-sm bg-transparent border-none hover:bg-transparent"
+                      onClick={() => setIsDeleteModalOpen(true)}
+                    >
+                      <TrashIcon className="w-4 h-4 text-white" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Delete Column</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
             </div>
-          </div>
-          <div
-            className="flex flex-col px-3 space-y-3 overflow-y-auto flex-1"
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-          >
-            {todos?.length > 0
-              ? todos.map((todo) => <TodoCard key={todo.id} todo={todo} />)
-              : null}
+            <div
+              className="flex flex-col px-3 space-y-3 overflow-y-auto flex-1"
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+            >
+              {todos?.length > 0
+                ? todos.map((todo) => <TodoCard key={todo.id} todo={todo} />)
+                : null}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </Fragment>
   );
 };

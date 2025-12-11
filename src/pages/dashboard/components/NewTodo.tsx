@@ -235,7 +235,7 @@ export const NewTodo = ({ isOpen, onClose }: NewTodoProps) => {
                   )}
                 />
               </FieldGroup>
-              <Button type="submit" className="w-full mt-4">
+              <Button type="submit" className="w-full mt-4 cursor-pointer">
                 {form.formState.isSubmitting ? "Saving todo..." : "Save Todo"}
               </Button>
             </form>

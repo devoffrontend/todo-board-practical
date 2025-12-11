@@ -48,7 +48,7 @@ export const TodoCard = ({ todo }: TodoCardProps) => {
         title="Delete Todo"
         description="Are you sure you want to delete this todo?"
         actionFunction={handleDelete}
-        text="Delete"
+        confirmText="Delete"
       />
       <div
         className="bg-white rounded-sm p-3 shadow-sm overflow-hidden space-y-2 cursor-grab"

@@ -15,7 +15,7 @@ export const ConfirmationAlert = ({
   title,
   description,
   actionFunction,
-  text = "Delete",
+  confirmText = "Delete",
   isLoading = false,
 }: {
   isOpen: boolean;
@@ -23,7 +23,7 @@ export const ConfirmationAlert = ({
   title: string;
   description: string;
   actionFunction: () => void;
-  text: string;
+  confirmText: string;
   isLoading?: boolean;
 }) => {
   return (
@@ -58,7 +58,8 @@ export const ConfirmationAlert = ({
               onClick={actionFunction}
               className="flex-1 cursor-pointer"
             >
-              {text} {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+              {confirmText}{" "}
+              {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
             </Button>
           </div>
         </div>
